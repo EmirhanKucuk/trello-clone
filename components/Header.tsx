@@ -1,10 +1,27 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Image from "next/image"
 import { MagnifyingGlassIcon, UserCircleIcon } from '@heroicons/react/24/solid'
 import Avatar from 'react-avatar'
+import { useBoardStore } from '@/store/BoardStore'
 function Header() {
+  const [board, searchString, setSearchString] = useBoardStore((state) => [
+    state.board,
+    state.searchString,
+    state.setSearchString
+  ])
+  const [loading, setLoading] = useState<boolean>(false);
+  const [suggestion, setSuggestion] = useState<string>("");
+  useEffect(() => {
+    if (board.columns.size === 0) return;
+    setLoading(true);
+    const fetchSuggestionFunc = async () => {
+      const suggestion = await fetchSuggestion(board);
+      setLoading(false);
+ 
+    }
+  }, [board])
   return (
     <header>
       <div className='flex flex-col md:flex-row items-center p-5 bg-gray-500/10 rounded-b-2xl'>
@@ -21,7 +38,7 @@ function Header() {
          blur-3xl
          opacity-50
          -z-50'
-         >
+        >
 
         </div>
         <Image
@@ -34,7 +51,7 @@ function Header() {
         <div className='flex items-center space-x-5 flex-1 justify-end w-full'>
           <form className='flex flex-1 md:flex-initial items-center space-x-5 bg-white rounded-md p-2 shadow-md'>
             <MagnifyingGlassIcon className='h-6 w-6 text-gray-400' />
-            <input type="text" placeholder='Search' className='flex-1 outline-none p-2 ' />
+            <input type="text" placeholder='Search' className='flex-1 outline-none p-2 ' onChange={(e) => setSearchString(e.target.value)} />
             <button type="submit" hidden>Search</button>
           </form>
 

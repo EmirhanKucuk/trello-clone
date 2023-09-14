@@ -5,10 +5,11 @@ import React, { useEffect } from 'react'
 import { DragDropContext, DropResult, Droppable } from "react-beautiful-dnd";
 import Column from './Column';
 export default function Board() {
-    const [board, getBoard, setBoardState] = useBoardStore((state) => [
+    const [board, getBoard, setBoardState,updateTodoInDB] = useBoardStore((state) => [
         state.board,
         state.getBoard,
-        state.setBoardState
+        state.setBoardState,
+        state.updateTodoInDB
     ]);
 
     useEffect(() => {
@@ -16,7 +17,8 @@ export default function Board() {
     }, [getBoard])
 
     const handleOnDragEnd = (result: DropResult) => {
-        const { destination, source, type } = result;
+        console.log(result)
+        const { destination, source, type,reason } = result;
         if (!destination) return;
 
         if (type === "column") {
@@ -45,18 +47,30 @@ export default function Board() {
 
         const newTodos = startCol.todos;
         const [todoMoved] = newTodos.splice(source.index, 1);
-
         if (startCol.id === finishCol.id) {
             newTodos.splice(destination.index, 0, todoMoved)
-            const tempCol = {
+            const tempStartCol = {
                 id: startCol.id,
                 todos: newTodos,
             };
             const newColumns = new Map(board.columns);
-            newColumns.set(startCol.id, tempCol);
+            newColumns.set(startCol.id, tempStartCol);
             setBoardState({ ...board, columns: newColumns })
         } else {
-            
+            const finishTodos = Array.from(finishCol.todos);
+            finishTodos.splice(destination.index, 0, todoMoved);
+            const tempFinishedCol = new Map(board.columns);
+            const newCol = {
+                id: startCol.id,
+                todos: newTodos
+            }
+            tempFinishedCol.set(startCol.id, newCol);
+            tempFinishedCol.set(finishCol.id, {
+                id: finishCol.id,
+                todos: finishTodos
+            });
+            updateTodoInDB(todoMoved,finishCol.id)
+            setBoardState({...board,columns:tempFinishedCol})
         }
     };
     return (
