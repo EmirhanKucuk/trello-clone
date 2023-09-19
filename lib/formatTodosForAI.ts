@@ -19,3 +19,5 @@ const formatTodosForAI = (board: Board) => {
     return flatArrayCounted;
 
 }
+
+export default formatTodosForAI;

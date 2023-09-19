@@ -20,8 +20,9 @@ function Header() {
     const fetchSuggestionFunc = async () => {
       const suggestion = await fetchSuggestion(board);
       setLoading(false);
- 
+      setSuggestion(suggestion);
     }
+    fetchSuggestionFunc();
   }, [board])
   return (
     <header>
