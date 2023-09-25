@@ -6,7 +6,6 @@ export const getTodosGroupedByColumn = async () => {
         process.env.NEXT_PUBLIC_TODOS_COLLECTION_ID!
     );
     const todos = data.documents;
-    console.log(todos)
     const columns = todos.reduce((acc, todo) => {
         if (!acc.get(todo.status)) {
             acc.set(todo.status, {
